@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10th September Examination - Interactive CBT Portal</title>
+<!-- Google Fonts: Poppins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --slate-900: #0f172a;
+    --slate-800: #1e293b;
+    --slate-700: #334155;
+    --slate-600: #475569;
+    --slate-400: #94a3b8;
+    --slate-200: #e2e8f0;
+    --slate-100: #f1f5f9;
+    --slate-50: #f8fafc;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --warning: #d97706;
+    --warning-bg: #fffbeb;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f1f5f9;
+    color: var(--slate-800);
+    line-height: 1.6;
+    padding-bottom: 80px;
+  }
+
+  /* Fixed Top Header / Nav */
+  .exam-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--slate-900);
+    color: #ffffff;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .exam-topbar-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge-live {
+    background-color: #ef4444;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .exam-timer {
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 6px 16px;
+    border-radius: 8px;
+    color: #38bdf8;
+    letter-spacing: 1px;
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+
+  /* Candidate Profile & Exam Card */
+  .candidate-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--slate-200);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+
+  .candidate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .candidate-field {
+    font-size: 0.82rem;
+    color: var(--slate-600);
+  }
+
+  .candidate-field strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--slate-900);
+    font-weight: 600;
+  }
+
+  .instructions-box {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: var(--slate-700);
+  }
+
+  /* Subject & Tier Banners */
+  .subject-header {
+    background: var(--slate-900);
+    color: #ffffff;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 32px 0 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .subject-header span {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--slate-400);
+  }
+
+  .tier-chip {
+    display: inline-block;
+    background: #e2e8f0;
+    color: var(--slate-800);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    margin: 16px 0 10px 0;
+    border-left: 4px solid var(--primary);
+  }
+
+  /* Question Card */
+  .question-card {
+    background: #ffffff;
+    border: 1px solid var(--slate-200);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .question-card:hover {
+    border-color: #cbd5e1;
+  }
+
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .q-num-badge {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+
+  .q-type-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-single {
+    background: #f1f5f9;
+    color: var(--slate-700);
+    border: 1px solid #cbd5e1;
+  }
+
+  .badge-multi {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+
+  .badge-ar {
+    background: #f3e8ff;
+    color: #6b21a8;
+    border: 1px solid #e9d5ff;
+  }
+
+  .q-prompt {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--slate-900);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  /* Options list */
+  .options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--slate-50);
+    border: 1.5px solid var(--slate-200);
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--slate-800);
+  }
+
+  .option-label:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+
+  .option-label input[type="radio"],
+  .option-label input[type="checkbox"] {
+    margin-top: 4px;
+    transform: scale(1.15);
+    cursor: pointer;
+    accent-color: var(--primary);
+  }
+
+  .opt-key {
+    font-weight: 700;
+    color: var(--slate-900);
+    min-width: 24px;
+  }
+
+  .opt-val {
+    flex: 1;
+  }
+
+  /* Selected style via JS toggle */
+  .option-label.selected {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+  }
+
+  /* Post-Submission Result Classes */
+  .question-card.correct-card {
+    border: 2px solid var(--success) !important;
+    background: #fafdfa;
+  }
+
+  .question-card.incorrect-card {
+    border: 2px solid var(--danger) !important;
+    background: #fdfafa;
+  }
+
+  .question-card.unattempted-card {
+    border: 2px solid var(--warning) !important;
+  }
+
+  .option-label.opt-correct {
+    background: var(--success-bg) !important;
+    border-color: var(--success) !important;
+    color: #14532d !important;
+    font-weight: 600;
+  }
+
+  .option-label.opt-wrong-selected {
+    background: var(--danger-bg) !important;
+    border-color: var(--danger) !important;
+    color: #7f1d1d !important;
+    font-weight: 600;
+  }
+
+  .solution-box {
+    display: none;
+    margin-top: 14px;
+    background: #f8fafc;
+    border-left: 4px solid #3b82f6;
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.86rem;
+    color: var(--slate-700);
+  }
+
+  /* Result Summary Dashboard Modal */
+  #resultDashboard {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .result-modal-box {
+    background: #ffffff;
+    max-width: 780px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--slate-900);
+    text-align: center;
+  }
+
+  .modal-subtitle {
+    text-align: center;
+    color: var(--slate-600);
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+  }
+
+  .score-banner {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .score-item-val {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  .score-item-lbl {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--slate-400);
+  }
+
+  .subject-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+  }
+
+  .subject-summary-table th, 
+  .subject-summary-table td {
+    padding: 10px;
+    border: 1px solid var(--slate-200);
+    text-align: center;
+  }
+
+  .subject-summary-table th {
+    background: var(--slate-50);
+    font-weight: 700;
+  }
+
+  /* Submit Action Floating Footer */
+  .submit-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border-top: 1px solid var(--slate-200);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+    z-index: 900;
+  }
+
+  .btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-submit {
+    background: var(--primary);
+    color: #ffffff;
+  }
+
+  .btn-submit:hover {
+    background: var(--primary-dark);
+  }
+
+  .btn-review {
+    background: var(--slate-800);
+    color: #ffffff;
+    width: 100%;
+    margin-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <div class="exam-topbar">
+    <div class="exam-topbar-title">
+      10th September Examination
+      <span class="badge-live">LIVE TEST</span>
+    </div>
+    <div class="exam-timer" id="timerClock">02:00:00</div>
+  </div>
+
+  <div class="container">
+    <!-- Candidate Card -->
+    <div class="candidate-card">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+        <div>
+          <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--slate-900);">National Pre-Medical / NCET Diagnostic Test</h2>
+          <p style="font-size: 0.85rem; color: var(--slate-600);">Paper Code: 1009-NEET-NCET &bull; CBT Examination Portal</p>
+        </div>
+        <div style="text-align: right;">
+          <span style="font-size: 0.8rem; font-weight: 700; background:#e0f2fe; color:#0369a1; padding:4px 10px; border-radius:6px;">Total Questions: 60</span>
+        </div>
+      </div>
+
+      <div class="candidate-grid">
+        <div class="candidate-field">Candidate Name<strong>Fiza khanam</strong></div>
+        <div class="candidate-field">Roll Number<strong>31032005</strong></div>
+        <div class="candidate-field">Date<strong>10th September 2026</strong></div>
+        <div class="candidate-field">Total Time<strong>90–120 Minutes</strong></div>
+      </div>
+
+      <div class="instructions-box">
+        <strong>Marking Scheme:</strong> Single-choice and Assertion-Reason items have exactly one correct answer (<strong>+4 / -1</strong>). Questions with the <span style="background:#fef3c7; color:#92400e; font-weight:700; padding:1px 4px; border-radius:3px;">Multiple Correct</span> tag use checkboxes and require all correct options to be selected for full marks. Unattempted questions award <strong>0</strong>.
+      </div>
+    </div>
+
+    <!-- Exam Interactive Form -->
+    <form id="examForm">
+      <div id="questionsContainer">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+    </form>
+  </div>
+
+  <!-- Bottom Submit Footer -->
+  <div class="submit-bar">
+    <div style="font-size: 0.9rem; font-weight: 600; color: var(--slate-700);">
+      Attempted: <span id="attemptCount" style="color: var(--primary); font-weight: 800;">0</span> / 60
+    </div>
+    <button type="button" class="btn btn-submit" id="btnSubmitTest" onclick="submitExam()">Submit Test</button>
+  </div>
+
+  <!-- Result Modal Dashboard -->
+  <div id="resultDashboard">
+    <div class="result-modal-box">
+      <h2 class="modal-title">Examination Result</h2>
+      <p class="modal-subtitle">Candidate: <strong>Fiza khanam</strong> | Roll No: <strong>31032005</strong></p>
+
+      <div class="score-banner">
+        <div>
+          <div class="score-item-val" id="resTotalScore">0</div>
+          <div class="score-item-lbl">Total Score (/240)</div>
+        </div>
+        <div>
+          <div class="score-item-val" id="resAccuracy">0%</div>
+          <div class="score-item-lbl">Accuracy Rate</div>
+        </div>
+        <div>
+          <div class="score-item-val" id="resAttempted">0/60</div>
+          <div class="score-item-lbl">Attempted</div>
+        </div>
+      </div>
+
+      <table class="subject-summary-table">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Attempted</th>
+            <th>Correct</th>
+            <th>Incorrect</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="subjectSummaryRows">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+
+      <button type="button" class="btn btn-review" onclick="closeModalAndReview()">Review Detailed Answer Explanations</button>
+    </div>
+  </div>
+
+<script>
+/* ======================== QUESTION BANK DATA ======================== */
+const examData = [
+  // ---------- BIOLOGY (Q1 - Q20) ----------
+  {
+    id: 1, subject: "Biology", tier: "Foundation Level", type: "single",
+    q: "The enzyme widely recognized as \"molecular scissors\" utilized in recombinant DNA technology is:",
+    opts: ["DNA Ligase", "Restriction Endonuclease", "DNA Polymerase", "Reverse Transcriptase"],
+    ans: [1],
+    exp: "Restriction endonucleases cleave phosphodiester bonds at specific palindromic sequences, earning them the title of molecular scissors."
+  },
+  {
+    id: 2, subject: "Biology", tier: "Foundation Level", type: "single",
+    q: "Which bacterium is naturally exploited as a natural genetic engineer for introducing foreign genes into dicotyledonous plants?",
+    opts: ["Escherichia coli", "Agrobacterium tumefaciens", "Bacillus thuringiensis", "Thermus aquaticus"],
+    ans: [1],
+    exp: "Agrobacterium tumefaciens naturally transfers its T-DNA via the Ti plasmid into dicot plant genomes."
+  },
+  {
+    id: 3, subject: "Biology", tier: "Foundation Level", type: "single",
+    q: "The first clinical gene therapy was successfully administered in 1990 to a 4-year-old girl suffering from:",
+    opts: ["Cystic fibrosis", "Adenosine deaminase (ADA) deficiency", "Phenylketonuria", "Sickle cell anemia"],
+    ans: [1],
+    exp: "In 1990, the first human gene therapy was performed to treat SCID caused by adenosine deaminase deficiency."
+  },
+  {
+    id: 4, subject: "Biology", tier: "Foundation Level", type: "single",
+    q: "In agarose gel electrophoresis, DNA fragments resolve and migrate according to their molecular size because:",
+    opts: [
+      "Smaller fragments move faster toward the anode through the molecular sieving matrix",
+      "Larger fragments move faster toward the anode due to higher net charge",
+      "Smaller fragments carry positive charges and migrate toward the cathode",
+      "Positively charged fragments are repelled by the cathode and pulled to the anode"
+    ],
+    ans: [0],
+    exp: "DNA is negatively charged (due to phosphate groups) and moves toward the anode; agarose sieving allows smaller fragments to pass faster."
+  },
+  {
+    id: 5, subject: "Biology", tier: "Foundation Level", type: "single",
+    q: "Golden Rice is a genetically modified biofortified crop developed primarily to overcome deficiency of:",
+    opts: ["Vitamin C", "Vitamin A precursor (β-carotene)", "Vitamin B12", "Iron and essential folic acid"],
+    ans: [1],
+    exp: "Golden Rice is biofortified with beta-carotene (provitamin A) synthesized through introduced daffodil/bacterial genes."
+  },
+  {
+    id: 6, subject: "Biology", tier: "Moderate Level", type: "single",
+    q: "In plasmid pBR322, insertion of an alien DNA fragment at the BamHI restriction site results in:",
+    opts: [
+      "Loss of ampicillin resistance while retaining tetracycline resistance",
+      "Loss of tetracycline resistance while retaining ampicillin resistance",
+      "Complete loss of plasmid autonomous replication capability",
+      "Immediate visual blue-white colony differentiation on ampicillin media"
+    ],
+    ans: [1],
+    exp: "BamHI site is located in the tetR gene; insertional inactivation makes the recombinant sensitive to tetracycline while ampR remains functional."
+  },
+  {
+    id: 7, subject: "Biology", tier: "Moderate Level", type: "single",
+    q: "Which specific step in the Polymerase Chain Reaction (PCR) cycle is directly catalyzed by Taq DNA polymerase?",
+    opts: [
+      "Thermal denaturation of double-stranded DNA template at 94°C",
+      "Hybridization and annealing of oligonucleotide primers at 50°C–60°C",
+      "Extension of primers along template DNA strands synthesizing dNTPs at 72°C",
+      "Sealing of nicked phosphodiester bonds at room temperature"
+    ],
+    ans: [2],
+    exp: "Extension of primers using dNTPs occurs optimally at 72°C catalyzed by the thermostable Taq polymerase."
+  },
+  {
+    id: 8, subject: "Biology", tier: "Moderate Level", type: "ar",
+    q: "Assertion (A): Bt toxin protein crystals synthesized by Bacillus thuringiensis do not kill the bacterium itself.<br>Reason (R): The Bt toxin exists as an inactive crystalline protoxin inside the bacterium and gets converted into an active toxin only in the alkaline pH of the insect gut.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "The protoxin is activated in the alkaline environment of the insect midgut, solubilizing crystals and binding epithelial receptors to cause pore formation."
+  },
+  {
+    id: 9, subject: "Biology", tier: "Moderate Level", type: "single",
+    q: "In agricultural biotechnology, RNA interference (RNAi) silences the expression of specific target mRNA through:",
+    opts: [
+      "Direct methylation and covalent histone alteration of the host genomic promoter",
+      "Formation of double-stranded RNA (dsRNA) which triggers sequence-specific mRNA degradation",
+      "Single-stranded DNA triplex binding preventing transcript elongation",
+      "Post-translational enzymatic degradation of target ribosomal subunits"
+    ],
+    ans: [1],
+    exp: "dsRNA is cleaved by Dicer into siRNAs, which guide the RISC complex to cleave complementary target mRNA."
+  },
+  {
+    id: 10, subject: "Biology", tier: "Moderate Level", type: "single",
+    q: "The primary commercial breakthrough achieved by Eli Lilly (1983) for producing recombinant human insulin was:",
+    opts: [
+      "Cloning pro-insulin gene and developing an artificial endopeptidase to excise the C-peptide",
+      "Synthesizing DNA sequences for chains A and B separately in E. coli and linking them via disulfide bonds",
+      "Direct continuous secretion of mature glycosylated insulin monomers into the culture filtrate",
+      "Engineering mammalian pancreatic beta-cells inside hollow-fiber bioreactors"
+    ],
+    ans: [1],
+    exp: "Eli Lilly bypassed enzymatic excision of C-peptide by synthesizing A and B chains in separate E. coli hosts and combining them via in vitro disulfide oxidation."
+  },
+  {
+    id: 11, subject: "Biology", tier: "Advanced Level", type: "single",
+    q: "A circular plasmid vector of size 6.0 kb contains a single restriction site for EcoRI and a single site for HindIII separated by 1.5 kb. Complete simultaneous digestion of this plasmid with both enzymes generates:",
+    opts: [
+      "Two fragments of 1.5 kb and 4.5 kb",
+      "Three fragments of 1.5 kb, 3.0 kb, and 1.5 kb",
+      "A single linearized DNA fragment of 6.0 kb",
+      "Two fragments of 3.0 kb each"
+    ],
+    ans: [0],
+    exp: "Cutting a circular 6.0 kb DNA molecule at two distinct loci generates two fragments: 1.5 kb and (6.0 - 1.5) = 4.5 kb."
+  },
+  {
+    id: 12, subject: "Biology", tier: "Advanced Level", type: "ar",
+    q: "Assertion (A): In insertional inactivation using the β-galactosidase reporter gene (lacZ), recombinant colonies appear white on X-gal agar medium.<br>Reason (R): Insertion of foreign recombinant DNA inside the coding sequence of β-galactosidase disrupts enzyme synthesis, preventing hydrolytic chromogenic conversion of X-gal.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "Disruption of lacZ produces inactive enzyme, leaving X-gal unhydrolyzed, so recombinant colonies stay white."
+  },
+  {
+    id: 13, subject: "Biology", tier: "Advanced Level", type: "multi",
+    q: "Which of the following cloning vectors are specifically designed to accommodate very large genomic DNA inserts exceeding 100 kilobase pairs (kb)?",
+    opts: [
+      "Bacterial Artificial Chromosomes (BAC)",
+      "Yeast Artificial Chromosomes (YAC)",
+      "Plasmid pUC19",
+      "λ-phage insertion vector"
+    ],
+    ans: [0, 1],
+    exp: "BACs (100–300 kb) and YACs (100–1000+ kb) accommodate large inserts; plasmids and lambda phage can carry only much smaller inserts (<25 kb)."
+  },
+  {
+    id: 14, subject: "Biology", tier: "Advanced Level", type: "multi",
+    q: "In industrial recombinant biotechnology, which of the following operations constitute downstream processing?",
+    opts: [
+      "Bacterial transformation, plating, and antibiotic selection",
+      "Separation and chromatographic purification of the expressed product",
+      "Formulation with suitable clinical preservatives and stabilizers",
+      "Gene isolation and construction of expression vectors"
+    ],
+    ans: [1, 2],
+    exp: "Downstream processing comprises separation, isolation, purification, and preservation. Transformation and vector construction belong to upstream genetic engineering."
+  },
+  {
+    id: 15, subject: "Biology", tier: "Advanced Level", type: "single",
+    q: "During the genetic engineering of tobacco plants resistant against the root parasite Meloidogyne incognita:",
+    opts: [
+      "Nematode-specific genes were introduced into the host plant such that both sense and antisense RNA were produced",
+      "Only viral antisense RNA was introduced to inhibit RNA-dependent RNA polymerase directly",
+      "Bt delta-endotoxin genes were introduced to induce midgut pore formation in the adult nematode",
+      "Host plants were engineered to secrete insect juvenile hormone disrupting nematode ecdysis"
+    ],
+    ans: [0],
+    exp: "Agrobacterium vectors introduced nematode-specific cDNA into tobacco plants under bidirectional promoters, synthesizing both sense and antisense RNA to trigger RNAi."
+  },
+  {
+    id: 16, subject: "Biology", tier: "Very Advanced Level", type: "single",
+    q: "A linear double-stranded DNA fragment of 12 kb length contains three restriction recognition sites for EcoRI located at positions 2 kb, 5 kb, and 9 kb from one terminus. If partial restriction digestion is carried out, which of the following fragment sizes CANNOT be generated among the digestion products?",
+    opts: ["7 kb", "10 kb", "8 kb", "4 kb"],
+    ans: [2],
+    exp: "Internal cut positions at 2, 5, 9 split the 12 kb into base segments: 2, 3, 4, 3 kb. Any partial fragment must be a contiguous sum: 2, 3, 4, 3, 2+3=5, 3+4=7, 4+3=7, 2+3+4=9, 3+4+3=10, 12 kb. An 8 kb fragment cannot be generated."
+  },
+  {
+    id: 17, subject: "Biology", tier: "Very Advanced Level", type: "ar",
+    q: "Assertion (A): Continuous culture systems in industrial bioprocesses yield higher biomass productivities than standard closed batch systems.<br>Reason (R): In continuous culture systems, fresh nutrients are continuously added while spent medium is continuously drained, maintaining microbes in their steady-state exponential (log) growth phase.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "Continuous dilution replenishes limiting substrate and removes inhibitory metabolites, preventing stationary decay and maximizing biomass throughput."
+  },
+  {
+    id: 18, subject: "Biology", tier: "Very Advanced Level", type: "multi",
+    q: "Regarding the enzymatic properties of Taq DNA polymerase used extensively in standard PCR cycles, which statements are TRUE?",
+    opts: [
+      "It lacks inherent 3' → 5' exonucleolytic proofreading activity.",
+      "It possesses 5' → 3' exonuclease activity utilized in TaqMan probe degradation assays.",
+      "It leaves a template-independent single adenine (A) nucleotide overhang at the 3' end of PCR products.",
+      "It is permanently denatured and rendered enzymatically inactive after 2 minutes at 95°C."
+    ],
+    ans: [0, 1, 2],
+    exp: "Taq lacks 3'→5' proofreading, has 5'→3' nick-translation exonuclease activity, and exhibits terminal transferase activity leaving single 3'-A overhangs. It resists 95°C denaturation."
+  },
+  {
+    id: 19, subject: "Biology", tier: "Very Advanced Level", type: "multi",
+    q: "Which of the following represent scientifically valid and verified applications of transgenic animals in medical research?",
+    opts: [
+      "Production of human α-1-antitrypsin in transgenic sheep milk for the management of emphysema",
+      "Development of transgenic mice carrying human poliovirus receptor genes to replace monkeys for batch safety testing",
+      "Transgenic cow \"Rosie\" (1997) producing nutritionally enriched milk containing human α-lactalbumin (2.4 g/L)",
+      "Direct expression of human insulin crystals in transgenic chickens without requiring disulfide pairing"
+    ],
+    ans: [0, 1, 2],
+    exp: "Rosie cow produced alpha-lactalbumin; transgenic mice model polio vaccine safety; alpha-1-antitrypsin manages emphysema. Insulin requires disulfide bridges."
+  },
+  {
+    id: 20, subject: "Biology", tier: "Very Advanced Level", type: "single",
+    q: "A circular plasmid containing both ampicillin resistance (ampᴿ) and tetracycline resistance (tetᴿ) genes is cleaved with PvuI, an enzyme whose restriction recognition sequence resides exclusively inside the ampᴿ coding open reading frame. A foreign genomic cDNA fragment is ligated into this site, and the recombinant vector is transformed into ampicillin- and tetracycline-sensitive E. coli. Which growth phenotype identifies the desired recombinant transformants?",
+    opts: [
+      "Growth on ampicillin plate; No growth on tetracycline plate",
+      "Growth on tetracycline plate; No growth on ampicillin plate",
+      "Growth on both ampicillin and tetracycline plates",
+      "Failure to grow on both ampicillin and tetracycline containing plates"
+    ],
+    ans: [1],
+    exp: "Disrupting ampR renders transformants sensitive to ampicillin, while undisturbed tetR maintains tetracycline resistance."
+  },
+
+  // ---------- PHYSICS (Q21 - Q40) ----------
+  {
+    id: 21, subject: "Physics", tier: "Foundation Level", type: "single",
+    q: "The dimensional formula of electrical permittivity of free space (ε₀) in terms of fundamental dimensions [M, L, T, A] is:",
+    opts: ["[M⁻¹ L⁻³ T⁴ A²]", "[M¹ L³ T⁻⁴ A⁻²]", "[M⁻¹ L² T⁻³ A¹]", "[M⁻¹ L⁻² T³ A²]"],
+    ans: [0],
+    exp: "From Coulomb's Law, ε₀ = q₁q₂ / (4π F r²). Units: C² / (N·m²) = (A·T)² / (M·L·T⁻² · L²) = [M⁻¹ L⁻³ T⁴ A²]."
+  },
+  {
+    id: 22, subject: "Physics", tier: "Foundation Level", type: "single",
+    q: "Two point charges +q and -q form an electric dipole separated by distance 2a. The electric field intensity at an axial point at distance r (r >> a) from dipole center varies as:",
+    opts: ["r⁻¹", "r⁻²", "r⁻³", "r⁻⁴"],
+    ans: [2],
+    exp: "Axial field of an electric dipole is E = 2kp / r³, which falls off inversely with the cube of distance (r⁻³)."
+  },
+  {
+    id: 23, subject: "Physics", tier: "Foundation Level", type: "single",
+    q: "Which of the following pairs of physical quantities have identical dimensional formulae?",
+    opts: [
+      "Torque and Mechanical Work",
+      "Electric Field and Electric Potential",
+      "Linear Momentum and Moment of Inertia",
+      "Surface Tension and Mechanical Force"
+    ],
+    ans: [0],
+    exp: "Torque (r × F) and Work (F · d) both have dimensions of [M L² T⁻²]."
+  },
+  {
+    id: 24, subject: "Physics", tier: "Foundation Level", type: "single",
+    q: "According to Gauss's Law, the total outward electric flux passing through any closed arbitrary surface enclosing zero net charge is:",
+    opts: ["Infinite", "Zero", "q / ε₀", "Proportional to surface area"],
+    ans: [1],
+    exp: "∮ E · dA = Q_enclosed / ε₀. If Q_enclosed = 0, the total flux is zero."
+  },
+  {
+    id: 25, subject: "Physics", tier: "Foundation Level", type: "single",
+    q: "If the measured percentage error in the radius of a uniformly charged conducting sphere is 2%, the maximum percentage error in calculating its total surface area is:",
+    opts: ["1%", "2%", "4%", "8%"],
+    ans: [2],
+    exp: "Surface Area A = 4π r². Fractional error ΔA/A = 2 (Δr/r). Thus % error = 2 × 2% = 4%."
+  },
+  {
+    id: 26, subject: "Physics", tier: "Moderate Level", type: "single",
+    q: "A point charge +Q is positioned exactly at the geometric center of an imaginary cube of edge length L. The total electric flux emerging through any single planar face of the cube is:",
+    opts: ["Q / ε₀", "Q / (6ε₀)", "Q / (8ε₀)", "Q / (24ε₀)"],
+    ans: [1],
+    exp: "Total flux through the 6 identical faces is Q / ε₀. By spherical symmetry around the cube's center, one face receives 1/6 of this, Q / (6ε₀)."
+  },
+  {
+    id: 27, subject: "Physics", tier: "Moderate Level", type: "single",
+    q: "The speed of transverse waves v in a stretched string depends upon the tension T (force) in the string and its linear mass density μ (mass per unit length). Using dimensional analysis, the relation is:",
+    opts: ["v ∝ √(T / μ)", "v ∝ T / μ", "v ∝ √(μ / T)", "v ∝ T μ²"],
+    ans: [0],
+    exp: "[T] = [M L T⁻²], [μ] = [M L⁻¹]. Ratio [T/μ] = [L² T⁻²]. Taking the square root gives [L T⁻¹], the dimension of velocity."
+  },
+  {
+    id: 28, subject: "Physics", tier: "Moderate Level", type: "ar",
+    q: "Assertion (A): Electrostatic field lines never intersect or cross each other at any point in space.<br>Reason (R): If two field lines intersect at a point, two tangents could be drawn at that point, implying two distinct directions for the resultant electric field vector, which is physically impossible.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "The net field at any point in space is unique. An intersection would imply two conflicting resultant vectors at one coordinate."
+  },
+  {
+    id: 29, subject: "Physics", tier: "Moderate Level", type: "single",
+    q: "An electric dipole with dipole moment p is placed at an orientation angle of 30° relative to a uniform electric field of magnitude E. The magnitude of restoring torque exerted on the dipole is:",
+    opts: ["pE", "pE / 2", "(√3 / 2) pE", "Zero"],
+    ans: [1],
+    exp: "Torque τ = p E sin(θ). For θ = 30°, sin(30°) = 1/2, so τ = pE / 2."
+  },
+  {
+    id: 30, subject: "Physics", tier: "Moderate Level", type: "single",
+    q: "If Force [F], Length [L], and Time [T] are chosen as the fundamental base dimensions instead of mass, length, and time, then the dimensional formula of Mass [M] is represented as:",
+    opts: ["[F L⁻¹ T²]", "[F L T⁻²]", "[F L⁻² T]", "[F L⁻¹ T⁻¹]"],
+    ans: [0],
+    exp: "Since F = m a = m L T⁻², solving for mass yields m = F L⁻¹ T²."
+  },
+  {
+    id: 31, subject: "Physics", tier: "Advanced Level", type: "single",
+    q: "An infinitely long straight uniform line charge generates an electric field intensity of 9 × 10⁴ N/C at a perpendicular distance of 2.0 cm from the line. The linear charge density (λ) along the wire is:",
+    opts: ["1.0 × 10⁻⁷ C/m", "1.0 × 10⁻⁸ C/m", "2.0 × 10⁻⁶ C/m", "5.0 × 10⁻⁷ C/m"],
+    ans: [0],
+    exp: "E = λ / (2π ε₀ r) = 2kλ / r. Rearranging: λ = E r / (2k) = (9×10⁴ × 0.02) / (2 × 9×10⁹) = 1.0 × 10⁻⁷ C/m."
+  },
+  {
+    id: 32, subject: "Physics", tier: "Advanced Level", type: "ar",
+    q: "Assertion (A): The electric field intensity inside a thin uniformly charged spherical shell is zero at all interior points, whereas the electric potential is non-zero and constant throughout the interior.<br>Reason (R): The electrostatic field is related to potential by E = -dV/dr; therefore, an electric field of zero identically implies that the spatial gradient of potential is zero, meaning potential remains constant.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "E = -dV/dr = 0 implies V is constant throughout the interior, equal to its value at the shell surface (kQ/R)."
+  },
+  {
+    id: 33, subject: "Physics", tier: "Advanced Level", type: "multi",
+    q: "Which of the following dimensionless combinations of fundamental constants represent pure numbers with dimension [M⁰ L⁰ T⁰]?",
+    opts: [
+      "e² / (4π ε₀ G m_e m_p)",
+      "ℏ c / (G M²)",
+      "ε₀ E² / (μ₀ B²)",
+      "E / B (Electric field / Magnetic field)"
+    ],
+    ans: [0, 1],
+    exp: "Option A is the ratio of electrostatic to gravitational force between proton and electron (dimensionless). Option B is related to the Planck mass ratio (dimensionless). E/B has dimensions of velocity [L T⁻¹]."
+  },
+  {
+    id: 34, subject: "Physics", tier: "Advanced Level", type: "multi",
+    q: "A non-conducting solid sphere of radius R has a uniform volume charge density throughout its volume. Which of the following statements concerning its radial electric field distribution E(r) are TRUE?",
+    opts: [
+      "For radial distance r ≤ R, the electric field is directly proportional to r (E ∝ r).",
+      "For radial distance r ≥ R, the electric field obeys the inverse-square law (E ∝ 1/r²).",
+      "The electric field profile is mathematically discontinuous at the boundary surface r = R.",
+      "The maximum magnitude of the electric field occurs exactly at the outer boundary r = R."
+    ],
+    ans: [0, 1, 3],
+    exp: "Inside, E = kQr/R³ (linear); outside, E = kQ/r² (inverse-square). At r = R, both give kQ/R², meaning the field is continuous and attains its maximum there."
+  },
+  {
+    id: 35, subject: "Physics", tier: "Advanced Level", type: "single",
+    q: "An open hemispherical surface of radius R is immersed in a uniform electric field E whose lines are aligned parallel to the principal axis of symmetry of the hemisphere. The magnitude of electric flux crossing the curved hemisphere is:",
+    opts: ["2π R² E", "π R² E", "4π R² E", "Zero"],
+    ans: [1],
+    exp: "Closing the hemisphere with a flat circular disc of area π R² creates a charge-free volume where net flux is zero. The flux through the flat base is π R² E, so the curved surface intercepts the same magnitude: π R² E."
+  },
+  {
+    id: 36, subject: "Physics", tier: "Very Advanced Level", type: "single",
+    q: "In theoretical quantum gravity, Planck's reduced constant (ℏ), Newton's gravitational constant (G), and the speed of light (c) combine to establish the fundamental Planck length scale (l_p). Its exact dimensional expression is:",
+    opts: ["[ℏ G / c³]^(1/2)", "[ℏ c / G]^(1/2)", "[ℏ G / c⁵]^(1/2)", "ℏ² G / c³"],
+    ans: [0],
+    exp: "Equating dimensions: [L] = [ℏ]^a [G]^b [c]^c yields a = 1/2, b = 1/2, c = -3/2. Thus l_p = √(ℏ G / c³)."
+  },
+  {
+    id: 37, subject: "Physics", tier: "Very Advanced Level", type: "single",
+    q: "A non-uniform spherically symmetric charge distribution has volume charge density given by ρ(r) = ρ₀ (1 - r/R) for r ≤ R, and zero elsewhere. The electric field intensity inside the sphere attains its maximum value at radial position:",
+    opts: ["r = R / 3", "r = R / 2", "r = 2R / 3", "r = 3R / 4"],
+    ans: [2],
+    exp: "From Gauss's Law, E(r) ∝ (r/3 - r²/(4R)). Setting dE/dr = 0: 1/3 - 2r/(4R) = 0 => 2r/(4R) = 1/3 => r = 2R/3."
+  },
+  {
+    id: 38, subject: "Physics", tier: "Very Advanced Level", type: "single",
+    q: "A point charge +q is situated at a perpendicular distance d directly above the center of a planar square lamina of side length 2d. The total electric flux traversing through this square surface is:",
+    opts: ["q / (6ε₀)", "q / (4ε₀)", "q / (24ε₀)", "q / (12ε₀)"],
+    ans: [0],
+    exp: "The square of side 2d at distance d forms one face of an imaginary cube of side 2d centered on the charge. By Gauss's Law and symmetry, one face receives 1/6 of the total flux: q / (6ε₀)."
+  },
+  {
+    id: 39, subject: "Physics", tier: "Very Advanced Level", type: "multi",
+    q: "The dielectric breakdown of dry air occurs when the local electric field exceeds 3 × 10⁶ V/m. Which of the following statements regarding electrostatic charge limits in air are TRUE?",
+    opts: [
+      "An isolated conducting sphere of radius 10 cm can hold a maximum electrostatic charge of approximately 3.33 µC before spark breakdown.",
+      "The maximum surface charge density achievable on any conductor in dry air before breakdown is given by σ_max = ε₀ E_crit.",
+      "The maximum electrostatic energy storage density in air prior to discharge is approximately 39.8 J/m³.",
+      "A conducting sphere with a smaller radius of curvature can be charged to a significantly higher electric potential than a larger sphere."
+    ],
+    ans: [0, 1, 2],
+    exp: "Q_max = E_crit R² / k = (3×10⁶ × 0.01) / (9×10⁹) = 3.33 µC. Boundary condition gives σ = ε₀ E. Energy density u = 1/2 ε₀ E² = 39.8 J/m³. Sharper points break down at lower potential, so D is false."
+  },
+  {
+    id: 40, subject: "Physics", tier: "Very Advanced Level", type: "ar",
+    q: "Assertion (A): Earnshaw's theorem establishes that a collection of point charges cannot be held in stable static equilibrium solely by electrostatic Coulomb forces.<br>Reason (R): According to Gauss's Law, in a charge-free region the divergence of the electric field is zero (∇ · E = 0), meaning the electric field cannot point inward from all directions around an equilibrium point.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "Stable equilibrium for a test charge requires a restoring force from all directions (net inward flux). By Gauss's Law, inward flux requires enclosing an opposite charge, which cannot occur in free space."
+  },
+
+  // ---------- CHEMISTRY (Q41 - Q60) ----------
+  {
+    id: 41, subject: "Chemistry", tier: "Foundation Level", type: "single",
+    q: "The international standard reference isotope universally adopted for establishing relative atomic mass scale is:",
+    opts: ["Carbon-14 (¹⁴C)", "Carbon-12 (¹²C)", "Oxygen-16 (¹⁶O)", "Hydrogen-1 (¹H)"],
+    ans: [1],
+    exp: "The unified atomic mass unit is defined as exactly 1/12th the mass of an unbound neutral Carbon-12 atom."
+  },
+  {
+    id: 42, subject: "Chemistry", tier: "Foundation Level", type: "single",
+    q: "The total number of moles of water molecules present in 180 grams of pure distilled liquid water is:",
+    opts: ["1.0 mol", "5.0 mol", "10.0 mol", "18.0 mol"],
+    ans: [2],
+    exp: "Molar mass of H₂O = 18 g/mol. Moles = 180 g / (18 g/mol) = 10.0 mol."
+  },
+  {
+    id: 43, subject: "Chemistry", tier: "Foundation Level", type: "single",
+    q: "Which of the following carbohydrates is classified as a non-reducing disaccharide?",
+    opts: ["D-Glucose", "Maltose", "Sucrose", "Lactose"],
+    ans: [2],
+    exp: "In sucrose, the glycosidic bond links C-1 of glucose and C-2 of fructose, locking both anomeric centers and preventing ring opening."
+  },
+  {
+    id: 44, subject: "Chemistry", tier: "Foundation Level", type: "single",
+    q: "The monomeric building block units joined by an α(1 → 4) glycosidic linkage in maltose are:",
+    opts: [
+      "α-D-Glucopyranose and β-D-Fructofuranose",
+      "α-D-Glucopyranose and α-D-Glucopyranose",
+      "β-D-Galactopyranose and β-D-Glucopyranose",
+      "β-D-Fructofuranose and α-D-Galactopyranose"
+    ],
+    ans: [1],
+    exp: "Maltose is composed of two α-D-glucopyranose units joined through an α(1 → 4) glycosidic bond."
+  },
+  {
+    id: 45, subject: "Chemistry", tier: "Foundation Level", type: "single",
+    q: "One unified atomic mass unit (1 u or 1 Da) is numerically equivalent to:",
+    opts: ["1.66056 × 10⁻²⁴ g", "6.02214 × 10⁻²³ g", "1.66056 × 10⁻²⁷ g", "9.10938 × 10⁻²⁸ g"],
+    ans: [0],
+    exp: "1 u = 1 / N_A grams = 1 / (6.02214 × 10²³) g ≈ 1.66056 × 10⁻²⁴ g (or 1.66056 × 10⁻²⁷ kg)."
+  },
+  {
+    id: 46, subject: "Chemistry", tier: "Moderate Level", type: "single",
+    q: "An organic compound contains 40.0% Carbon, 6.7% Hydrogen, and 53.3% Oxygen by mass. If its measured vapor density is 30, its true molecular formula is:",
+    opts: ["CH₂O", "C₂H₄O₂", "C₃H₆O₃", "C₆H₁₂O₆"],
+    ans: [1],
+    exp: "Moles: C = 40/12 = 3.33, H = 6.7/1 = 6.7, O = 53.3/16 = 3.33. Empirical formula is CH₂O (mass 30). Molar mass = 2 × VD = 60. Factor n = 60/30 = 2 => C₂H₄O₂."
+  },
+  {
+    id: 47, subject: "Chemistry", tier: "Moderate Level", type: "single",
+    q: "On prolonged heating with red phosphorus and concentrated hydriodic acid (HI), D-glucose undergoes complete reduction to yield:",
+    opts: ["Gluconic acid", "Saccharic acid", "n-Hexane", "Sorbitol"],
+    ans: [2],
+    exp: "Prolonged heating with red P + HI reduces all carbonyl and hydroxyl groups, yielding n-hexane and confirming a continuous six-carbon backbone."
+  },
+  {
+    id: 48, subject: "Chemistry", tier: "Moderate Level", type: "ar",
+    q: "Assertion (A): An aqueous solution of sucrose is dextrorotatory, but following acid-catalyzed hydrolysis, the resulting solution becomes levorotatory.<br>Reason (R): Hydrolysis of sucrose produces an equimolar mixture of D-(+)-glucose (+52.5°) and D-(-)-fructose (-92.4°), where the magnitude of levorotation of fructose exceeds the dextrorotation of glucose.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "Sucrose is dextrorotatory (+66.5°). Hydrolysis produces an equimolar mixture yielding a net negative rotation of -19.95°, inverting the optical sign (invert sugar)."
+  },
+  {
+    id: 49, subject: "Chemistry", tier: "Moderate Level", type: "single",
+    q: "The total number of individual oxygen atoms present in a 4.4 g sample of dry carbon dioxide gas (CO₂) is:",
+    opts: ["6.022 × 10²³", "1.204 × 10²³", "1.204 × 10²²", "6.022 × 10²²"],
+    ans: [1],
+    exp: "Moles of CO₂ = 4.4 / 44 = 0.1 mol. Each CO₂ molecule contains 2 oxygen atoms. Total oxygen atoms = 0.1 × 2 × 6.022 × 10²³ = 1.204 × 10²³."
+  },
+  {
+    id: 50, subject: "Chemistry", tier: "Moderate Level", type: "single",
+    q: "In carbohydrate stereochemistry, D-Glucose and D-Mannose are stereoisomers categorized as:",
+    opts: ["Anomers", "C-2 Epimers", "C-4 Epimers", "Enantiomers"],
+    ans: [1],
+    exp: "D-Glucose and D-Mannose differ only in the spatial configuration at the C-2 carbon, making them C-2 epimers."
+  },
+  {
+    id: 51, subject: "Chemistry", tier: "Advanced Level", type: "single",
+    q: "Oxidation of D-glucose with bromine water yields compound X, whereas its vigorous oxidation with concentrated nitric acid yields compound Y. Compounds X and Y are respectively:",
+    opts: [
+      "X = Gluconic acid, Y = Saccharic (glucaric) acid",
+      "X = Saccharic acid, Y = Gluconic acid",
+      "X = Glucaric acid, Y = Sorbitol",
+      "X = Gluconic acid, Y = Tartaric acid"
+    ],
+    ans: [0],
+    exp: "Bromine water mildly oxidizes only the aldehyde group to give gluconic acid (X). Concentrated HNO₃ oxidizes both the aldehyde and the terminal primary alcohol to give saccharic acid (Y)."
+  },
+  {
+    id: 52, subject: "Chemistry", tier: "Advanced Level", type: "single",
+    q: "A pure sample of hydrated barium chloride (BaCl₂ · xH₂O) weighing 2.44 g is strongly heated until water of crystallization is driven off. The remaining anhydrous residue weighs 2.08 g. The integer value of x is:<br><small style=\"color:#64748b;\">(Atomic masses: Ba = 137, Cl = 35.5, H = 1.0, O = 16.0)</small>",
+    opts: ["1", "2", "3", "4"],
+    ans: [1],
+    exp: "Mass of BaCl₂ = 2.08 g (Molar mass = 208 g/mol) => 0.01 mol. Mass of water driven off = 2.44 - 2.08 = 0.36 g (Molar mass = 18 g/mol) => 0.02 mol. Ratio x = 0.02 / 0.01 = 2."
+  },
+  {
+    id: 53, subject: "Chemistry", tier: "Advanced Level", type: "multi",
+    q: "Regarding the structural differences between amylose and amylopectin in starch, which statements are TRUE?",
+    opts: [
+      "Amylose is a linear, water-soluble polymer consisting solely of α(1 → 4) glycosidic linkages.",
+      "Amylopectin is a branched, water-insoluble component possessing both α(1 → 4) linear and α(1 → 6) branch linkages.",
+      "Branch points in amylopectin occur periodically along the polymer chain every 24–30 glucose units.",
+      "Amylose forms an intense blue helical inclusion complex with iodine, whereas pure amylopectin produces a reddish-brown coloration."
+    ],
+    ans: [0, 1, 2, 3],
+    exp: "All statements are correct. Amylose is unbranched and forms blue helical iodine inclusion complexes; amylopectin is branched via α(1→6) bonds every 24–30 units."
+  },
+  {
+    id: 54, subject: "Chemistry", tier: "Advanced Level", type: "ar",
+    q: "Assertion (A): The pentaacetate derivative of D-glucose does not react with hydroxylamine (NH₂OH) to form an oxime.<br>Reason (R): In glucose pentaacetate, the C-1 anomeric hydroxyl is blocked as an ester, locking the molecule in a cyclic pyranose ring that cannot mutarotate or furnish an open-chain free aldehyde (-CHO) group.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "Esterification of the anomeric C-1 OH prevents open-chain tautomerism, leaving no free aldehyde to condense with hydroxylamine."
+  },
+  {
+    id: 55, subject: "Chemistry", tier: "Advanced Level", type: "multi",
+    q: "Which of the following sugars give a positive silver mirror test with Tollens' reagent?",
+    opts: ["D-Glucose", "D-Fructose", "Maltose", "Sucrose"],
+    ans: [0, 1, 2],
+    exp: "Glucose and maltose have oxidizable hemiacetal groups. Fructose tautomerizes to aldoses via enediol intermediates in alkaline Tollens' reagent. Sucrose is non-reducing."
+  },
+  {
+    id: 56, subject: "Chemistry", tier: "Very Advanced Level", type: "single",
+    q: "A 10.0 g solid mixture containing anhydrous Na₂CO₃ (molar mass = 106 g/mol) and NaHCO₃ (molar mass = 84 g/mol) is heated strongly until thermal decomposition of bicarbonate is complete:<br><div style=\"text-align:center; font-weight:700; margin:4px 0;\">2 NaHCO₃ (s) → Na₂CO₃ (s) + H₂O (g) + CO₂ (g)</div>The anhydrous solid residue remaining after heating weighs 8.45 g. The mass percentage of NaHCO₃ in the original mixture is:",
+    opts: ["42.0%", "84.0%", "62.0%", "50.0%"],
+    ans: [0],
+    exp: "Mass lost as gas (H₂O + CO₂) = 10.0 - 8.45 = 1.55 g. 2 mol NaHCO₃ (168 g) generates 62 g of volatile gases. Mass of NaHCO₃ = 1.55 × (168 / 62) = 4.20 g. Mass % = (4.20 / 10.0) × 100 = 42.0%."
+  },
+  {
+    id: 57, subject: "Chemistry", tier: "Very Advanced Level", type: "single",
+    q: "When D-glucose reacts with excess phenylhydrazine under warm acidic conditions to form glucosazone, chemical modification is strictly restricted to which carbon centers?",
+    opts: ["Carbon-1 only", "Carbon-1 and Carbon-2", "Carbon-1, Carbon-2, and Carbon-3", "Carbon-1 and Carbon-6"],
+    ans: [1],
+    exp: "Osazone formation consumes three equivalents of phenylhydrazine and modifies only C-1 and C-2, leaving the configurations at C-3, C-4, and C-5 unchanged."
+  },
+  {
+    id: 58, subject: "Chemistry", tier: "Very Advanced Level", type: "multi",
+    q: "Which of the following carbohydrate species do NOT undergo mutarotation when dissolved in neutral aqueous solution?",
+    opts: [
+      "α-D-Glucopyranose",
+      "Sucrose",
+      "Methyl α-D-glucopyranoside",
+      "Lactose"
+    ],
+    ans: [1, 2],
+    exp: "Mutarotation requires ring opening through a free hemiacetal/hemiketal OH. Sucrose lacks a free anomeric OH, and methyl α-D-glucopyranoside is a stable acetal."
+  },
+  {
+    id: 59, subject: "Chemistry", tier: "Very Advanced Level", type: "single",
+    q: "Eudiometric combustion analysis of a gaseous hydrocarbon C_x H_y reveals that 10 mL of the hydrocarbon requires exactly 55 mL of pure O₂ for complete stoichiometric combustion, producing 40 mL of CO₂ gas (all volumes measured at uniform temperature and pressure). The empirical molecular formula of the hydrocarbon is:",
+    opts: ["C₄H₆", "C₄H₈", "C₃H₈", "C₄H₁₀"],
+    ans: [0],
+    exp: "Reaction: C_x H_y + (x + y/4) O₂ → x CO₂ + y/2 H₂O. 10x = 40 => x = 4. 10(x + y/4) = 55 => 4 + y/4 = 5.5 => y/4 = 1.5 => y = 6. Hydrocarbon is C₄H₆."
+  },
+  {
+    id: 60, subject: "Chemistry", tier: "Very Advanced Level", type: "ar",
+    q: "Assertion (A): Despite being a ketose, D-fructose readily reduces Tollens' reagent and Fehling's solution.<br>Reason (R): In an alkaline reaction medium, D-fructose undergoes Lobry de Bruyn–Alberda van Ekenstein tautomerization via an intermediate enediol to equilibrate with D-glucose and D-mannose, which possess easily oxidizable aldose groups.",
+    opts: [
+      "Both (A) and (R) are true, and (R) is the correct explanation of (A).",
+      "Both (A) and (R) are true, but (R) is not the correct explanation of (A).",
+      "(A) is true, but (R) is false.",
+      "(A) is false, but (R) is true."
+    ],
+    ans: [0],
+    exp: "Under alkaline conditions, fructose rearranges through an enediol intermediate into aldoses (glucose and mannose), which reduce Tollens' and Fehling's reagents."
+  }
+];
+
+/* ======================== DYNAMIC PAGE RENDERING ======================== */
+function renderExamPaper() {
+  const container = document.getElementById("questionsContainer");
+  let currentSubject = "";
+  let currentTier = "";
+  let html = "";
+
+  examData.forEach((qObj, index) => {
+    // Subject Section Header
+    if (qObj.subject !== currentSubject) {
+      currentSubject = qObj.subject;
+      currentTier = "";
+      html += `
+        <div class="subject-header">
+          <div>SECTION: ${currentSubject.toUpperCase()}</div>
+          <span>${getSubjectChapters(currentSubject)}</span>
+        </div>
+      `;
+    }
+
+    // Difficulty Tier Subheader
+    if (qObj.tier !== currentTier) {
+      currentTier = qObj.tier;
+      html += `<div class="tier-chip">${currentTier}</div>`;
+    }
+
+    const isMulti = qObj.type === "multi";
+    const badgeLabel = isMulti ? "Multiple Correct" : (qObj.type === "ar" ? "Assertion - Reason" : "Single Choice");
+    const badgeClass = isMulti ? "badge-multi" : (qObj.type === "ar" ? "badge-ar" : "badge-single");
+    const inputType = isMulti ? "checkbox" : "radio";
+    const inputName = `q_${qObj.id}`;
+
+    html += `
+      <div class="question-card" id="card_${qObj.id}">
+        <div class="q-meta">
+          <span class="q-num-badge">Question ${qObj.id}</span>
+          <span class="q-type-badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+        <div class="q-prompt">${qObj.q}</div>
+        <div class="options-container">
+          ${qObj.opts.map((opt, optIdx) => {
+            const optLetter = String.fromCharCode(65 + optIdx);
+            return `
+              <label class="option-label" id="label_${qObj.id}_${optIdx}">
+                <input type="${inputType}" 
+                       name="${inputName}" 
+                       value="${optIdx}" 
+                       onchange="handleOptionChange(${qObj.id}, ${optIdx}, ${isMulti})">
+                <span class="opt-key">(${optLetter})</span>
+                <span class="opt-val">${opt}</span>
+              </label>
+            `;
+          }).join('')}
+        </div>
+        <div class="solution-box" id="sol_${qObj.id}">
+          <strong>Detailed Explanation:</strong><br>
+          ${qObj.exp}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function getSubjectChapters(sub) {
+  if (sub === "Biology") return "Biotechnology: Principles & Processes • Biotechnology & Applications";
+  if (sub === "Physics") return "Units & Dimensions • Electric Charges & Fields";
+  if (sub === "Chemistry") return "Atomic & Molecular Masses • Carbohydrates";
+  return "";
+}
+
+/* ======================== INTERACTIVE USER SELECTIONS ======================== */
+function handleOptionChange(qId, optIdx, isMulti) {
+  const card = document.getElementById(`card_${qId}`);
+  if (!isMulti) {
+    // Clear previously selected styling on other radios for this question
+    const allLabels = card.querySelectorAll(".option-label");
+    allLabels.forEach(lbl => lbl.classList.remove("selected"));
+    const selectedLabel = document.getElementById(`label_${qId}_${optIdx}`);
+    if (selectedLabel) selectedLabel.classList.add("selected");
+  } else {
+    const targetLabel = document.getElementById(`label_${qId}_${optIdx}`);
+    const checkbox = targetLabel.querySelector("input");
+    if (checkbox.checked) {
+      targetLabel.classList.add("selected");
+    } else {
+      targetLabel.classList.remove("selected");
+    }
+  }
+  updateAttemptedCount();
+}
+
+function updateAttemptedCount() {
+  let attempted = 0;
+  examData.forEach(q => {
+    const inputs = document.querySelectorAll(`input[name="q_${q.id}"]:checked`);
+    if (inputs.length > 0) attempted++;
+  });
+  document.getElementById("attemptCount").innerText = attempted;
+}
+
+/* ======================== EXAM SUBMISSION & SCORING ======================== */
+function submitExam() {
+  const confirmed = confirm("Are you sure you want to submit your examination? Once submitted, your scores and detailed answer solutions will be calculated immediately.");
+  if (!confirmed) return;
+
+  clearInterval(timerInterval);
+
+  let totalScore = 0;
+  let correctCount = 0;
+  let incorrectCount = 0;
+  let unattemptedCount = 0;
+
+  const subjectStats = {
+    Biology: { total: 0, attempted: 0, correct: 0, incorrect: 0, score: 0 },
+    Physics: { total: 0, attempted: 0, correct: 0, incorrect: 0, score: 0 },
+    Chemistry: { total: 0, attempted: 0, correct: 0, incorrect: 0, score: 0 }
+  };
+
+  examData.forEach(q => {
+    const card = document.getElementById(`card_${q.id}`);
+    const selectedInputs = Array.from(document.querySelectorAll(`input[name="q_${q.id}"]:checked`));
+    const userSelected = selectedInputs.map(input => parseInt(input.value)).sort();
+    const correctAnswers = [...q.ans].sort();
+
+    subjectStats[q.subject].total++;
+
+    // Disable inputs so student cannot alter answers after submission
+    const allInputs = document.querySelectorAll(`input[name="q_${q.id}"]`);
+    allInputs.forEach(inp => inp.disabled = true);
+
+    // Reveal explanation box
+    const solBox = document.getElementById(`sol_${q.id}`);
+    if (solBox) solBox.style.display = "block";
+
+    // Mark correct options in green
+    correctAnswers.forEach(cIdx => {
+      const correctLabel = document.getElementById(`label_${q.id}_${cIdx}`);
+      if (correctLabel) correctLabel.classList.add("opt-correct");
+    });
+
+    if (userSelected.length === 0) {
+      // Unattempted: 0 marks
+      unattemptedCount++;
+      card.classList.add("unattempted-card");
+    } else {
+      subjectStats[q.subject].attempted++;
+      // Check if user's selections match correct array identically
+      const isCorrect = (userSelected.length === correctAnswers.length) &&
+                        userSelected.every((val, index) => val === correctAnswers[index]);
+
+      if (isCorrect) {
+        totalScore += 4;
+        correctCount++;
+        subjectStats[q.subject].correct++;
+        subjectStats[q.subject].score += 4;
+        card.classList.add("correct-card");
+      } else {
+        totalScore -= 1;
+        incorrectCount++;
+        subjectStats[q.subject].incorrect++;
+        subjectStats[q.subject].score -= 1;
+        card.classList.add("incorrect-card");
+
+        // Highlight chosen incorrect selections in red
+        userSelected.forEach(uIdx => {
+          if (!correctAnswers.includes(uIdx)) {
+            const wrongLabel = document.getElementById(`label_${q.id}_${uIdx}`);
+            if (wrongLabel) wrongLabel.classList.add("opt-wrong-selected");
+          }
+        });
+      }
+    }
+  });
+
+  // Calculate stats
+  const totalAttempted = correctCount + incorrectCount;
+  const accuracy = totalAttempted > 0 ? Math.round((correctCount / totalAttempted) * 100) : 0;
+
+  // Populate Dashboard Modal
+  document.getElementById("resTotalScore").innerText = totalScore;
+  document.getElementById("resAccuracy").innerText = `${accuracy}%`;
+  document.getElementById("resAttempted").innerText = `${totalAttempted}/60`;
+
+  let tableHtml = "";
+  for (const [subj, data] of Object.entries(subjectStats)) {
+    tableHtml += `
+      <tr>
+        <td style="font-weight:700; text-align:left;">${subj}</td>
+        <td>${data.attempted} / ${data.total}</td>
+        <td style="color:var(--success); font-weight:700;">${data.correct}</td>
+        <td style="color:var(--danger); font-weight:700;">${data.incorrect}</td>
+        <td style="font-weight:700;">${data.score}</td>
+      </tr>
+    `;
+  }
+  document.getElementById("subjectSummaryRows").innerHTML = tableHtml;
+
+  // Open modal
+  document.getElementById("resultDashboard").style.display = "flex";
+  document.getElementById("btnSubmitTest").disabled = true;
+  document.getElementById("btnSubmitTest").innerText = "Test Completed";
+}
+
+function closeModalAndReview() {
+  document.getElementById("resultDashboard").style.display = "none";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ======================== 120-MINUTE TIMER ======================== */
+let remainingSeconds = 120 * 60; // 120 minutes
+const timerClock = document.getElementById("timerClock");
+
+const timerInterval = setInterval(() => {
+  remainingSeconds--;
+  if (remainingSeconds <= 0) {
+    clearInterval(timerInterval);
+    timerClock.innerText = "00:00:00";
+    alert("Time is up! Your responses will now be submitted automatically.");
+    submitExam();
+    return;
+  }
+
+  const hrs = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
+  const mins = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
+  const secs = String(remainingSeconds % 60).padStart(2, '0');
+  timerClock.innerText = `${hrs}:${mins}:${secs}`;
+}, 1000);
+
+// Initialize document
+window.addEventListener("DOMContentLoaded", () => {
+  renderExamPaper();
+});
+</script>
+</body>
+</html>
