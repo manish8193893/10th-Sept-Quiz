@@ -508,7 +508,7 @@
     <div style="font-size: 0.9rem; font-weight: 600; color: var(--slate-700);">
       Attempted: <span id="attemptCount" style="color: var(--primary); font-weight: 800;">0</span> / 60
     </div>
-    <button type="button" class="btn btn-submit" id="btnSubmitTest" onclick="submitExam()">Submit Test</button>
+    <button type="button" class="btn btn-submit" id="btnSubmitTest" onclick="openConfirmModal()">Submit Test</button>
   </div>
 
   <!-- Result Modal Dashboard -->
@@ -548,6 +548,19 @@
       </table>
 
       <button type="button" class="btn btn-review" onclick="closeModalAndReview()">Review Detailed Answer Explanations</button>
+    </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div id="confirmModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:2100; align-items:center; justify-content:center;">
+    <div style="background:#fff; max-width:520px; width:100%; border-radius:12px; padding:20px; box-shadow:0 12px 30px rgba(2,6,23,0.2);">
+      <h3 style="margin-bottom:8px; font-size:1.1rem; color:var(--slate-900);">Confirm Submission</h3>
+      <p style="color:var(--slate-600); font-size:0.92rem; margin-bottom:12px;">Are you sure you want to submit your examination? This action cannot be undone. To confirm, type <strong>SUBMIT</strong> below and click Confirm.</p>
+      <input id="confirmInput" placeholder="Type SUBMIT to confirm" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--slate-200); margin-bottom:12px; font-size:0.95rem;" />
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button type="button" class="btn" onclick="closeConfirmModal()" style="background:#e5e7eb; color:var(--slate-800);">Cancel</button>
+        <button type="button" id="confirmProceedBtn" class="btn btn-submit" disabled style="opacity:0.6;">Confirm</button>
+      </div>
     </div>
   </div>
 
@@ -1229,9 +1242,42 @@ function updateAttemptedCount() {
 }
 
 /* ======================== EXAM SUBMISSION & SCORING ======================== */
-function submitExam() {
-  const confirmed = confirm("Are you sure you want to submit your examination? Once submitted, your scores and detailed answer solutions will be calculated immediately.");
-  if (!confirmed) return;
+let hasSubmitted = false;
+
+function openConfirmModal() {
+  const modal = document.getElementById('confirmModal');
+  modal.style.display = 'flex';
+  const input = document.getElementById('confirmInput');
+  const btn = document.getElementById('confirmProceedBtn');
+  input.value = '';
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+
+  input.addEventListener('input', function onInput() {
+    if (input.value.trim().toUpperCase() === 'SUBMIT') {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    } else {
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+    }
+  }, { once: false });
+
+  btn.onclick = function () {
+    closeConfirmModal();
+    submitExam(true); // proceed to submit (treated as confirmed)
+  };
+}
+
+function closeConfirmModal() {
+  const modal = document.getElementById('confirmModal');
+  modal.style.display = 'none';
+}
+
+function submitExam(silent = false) {
+  if (hasSubmitted) return;
+  // silent=true means programmatic submission (no additional confirmation UI)
+  hasSubmitted = true;
 
   clearInterval(timerInterval);
 
@@ -1327,8 +1373,9 @@ function submitExam() {
 
   // Open modal
   document.getElementById("resultDashboard").style.display = "flex";
-  document.getElementById("btnSubmitTest").disabled = true;
-  document.getElementById("btnSubmitTest").innerText = "Test Completed";
+  const btn = document.getElementById("btnSubmitTest");
+  btn.disabled = true;
+  btn.innerText = "Test Completed";
 }
 
 function closeModalAndReview() {
@@ -1345,8 +1392,8 @@ const timerInterval = setInterval(() => {
   if (remainingSeconds <= 0) {
     clearInterval(timerInterval);
     timerClock.innerText = "00:00:00";
-    alert("Time is up! Your responses will now be submitted automatically.");
-    submitExam();
+    // Time up: auto-submit without asking
+    submitExam(true);
     return;
   }
 
@@ -1359,6 +1406,20 @@ const timerInterval = setInterval(() => {
 // Initialize document
 window.addEventListener("DOMContentLoaded", () => {
   renderExamPaper();
+});
+
+// Auto-submit when user attempts to leave or switch tabs
+window.addEventListener('beforeunload', (e) => {
+  // Attempt to submit answers immediately
+  try { submitExam(true); } catch (err) { }
+  // Do not block unload; browsers ignore custom messages anyway
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    // When user switches tab or minimizes, auto-submit
+    try { submitExam(true); } catch (err) { }
+  }
 });
 </script>
 </body>
